@@ -42,6 +42,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioSuccess = new javax.swing.JRadioButton();
         radioWarning = new javax.swing.JRadioButton();
         radioError = new javax.swing.JRadioButton();
+        companyLogo2 = new io.gongarce.ud2_components.company_logo.CompanyLogo();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -50,8 +51,10 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         lblState.setText("stateLabel2");
         lblState.setTextColor(new java.awt.Color(0, 102, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(20, 20, 10, 20);
+        gridBagConstraints.ipady = 20;
         getContentPane().add(lblState, gridBagConstraints);
 
         radioGroupState.add(radioDefault);
@@ -59,7 +62,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioDefault.setText("Default");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(radioDefault, gridBagConstraints);
@@ -68,7 +71,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioSuccess.setText("Success");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(radioSuccess, gridBagConstraints);
@@ -77,7 +80,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioWarning.setText("Warning");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(radioWarning, gridBagConstraints);
@@ -86,10 +89,14 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioError.setText("Error");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(radioError, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        getContentPane().add(companyLogo2, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -130,6 +137,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private io.gongarce.ud2_components.company_logo.CompanyLogo companyLogo2;
     private io.gongarce.ud2_components.state_label.StateLabel lblState;
     private javax.swing.JRadioButton radioDefault;
     private javax.swing.JRadioButton radioError;
