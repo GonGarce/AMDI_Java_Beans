@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyVetoException;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 
 /**
  *
@@ -16,24 +16,24 @@ import javax.swing.UIManager;
 public class InfoMessage extends javax.swing.JPanel {
 
     public static final String PROP_TITLE = "title";
-    
+
     private String title;
     private String message;
     private String[] buttons;
     private StateMessage state;
 
     private Color messageColor;
-    
+
     /**
      * Creates new form InfoMessage
      */
     public InfoMessage() {
         // Relacionar el tipo de mi propiedad con el editor de propiedades personalizado
         PropertyEditorManager.registerEditor(StateMessage.class, StateMessagePropertyEditor.class);
-        
+
         // Create UI
         initComponents();
-        
+
         // Set default values
         setState(StateMessage.INFO);
         setTitle("Title");
@@ -46,24 +46,33 @@ public class InfoMessage extends javax.swing.JPanel {
 
     public void setState(StateMessage state) {
         this.state = state;
+        Color borderColor, bgColor;
+        Icon icon;
         switch (state) {
             case ERROR -> {
-                setBackground(Color.red);
-                lblIcon.setIcon(UIManager.getIcon("OptionPane.errorIcon"));
+                bgColor = new Color(239, 83, 80, 75);
+                borderColor = new Color(198, 40, 40);
+                icon = new ImageIcon(getClass().getResource("/images/icon_error.png"));
             }
             case SUCCESS -> {
-                setBackground(Color.GREEN);
-                lblIcon.setIcon(UIManager.getIcon("MenuItem.checkIcon"));
+                bgColor = new Color(76, 175, 80, 75);
+                borderColor = new Color(27, 94, 32);
+                icon = new ImageIcon(getClass().getResource("/images/icon_ok.png"));
             }
             case WARNING -> {
-                setBackground(Color.YELLOW);
-                lblIcon.setIcon(UIManager.getIcon("OptionPane.warningIcon"));
+                bgColor = new Color(255, 152, 0, 75);
+                borderColor = new Color(230, 81, 0);
+                icon = new ImageIcon(getClass().getResource("/images/icon_warning.png"));
             }
             default -> {
-                setBackground(Color.BLUE);
-                lblIcon.setIcon(UIManager.getIcon("OptionPane.informationIcon"));
+                bgColor = new Color(3, 169, 244, 75);
+                borderColor = new Color(1, 87, 155);
+                icon = new ImageIcon(getClass().getResource("/images/icon_info.png"));
             }
         }
+        setBackground(bgColor);
+        setBorder(new LineBorder(borderColor, 1, true));
+        lblIcon.setIcon(icon);
     }
 
     public String getTitle() {
@@ -147,7 +156,7 @@ public class InfoMessage extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(lblIcon, gridBagConstraints);
 
-        lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
@@ -160,13 +169,13 @@ public class InfoMessage extends javax.swing.JPanel {
         add(lblMessage, gridBagConstraints);
 
         panelButtons.setBackground(new java.awt.Color(255, 255, 255));
+        panelButtons.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 10, 10));
         panelButtons.setOpaque(false);
         panelButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
         add(panelButtons, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
