@@ -1,8 +1,12 @@
 package io.gongarce.ud2_components_example;
 
+import io.gongarce.ud2_components.info_message.InfoMessage;
+import io.gongarce.ud2_components.info_message.StateMessage;
 import io.gongarce.ud2_components.state_label.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
+import java.util.Objects;
 
 /**
  *
@@ -24,6 +28,22 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioError.addActionListener(this);
         radioSuccess.addActionListener(this);
         radioWarning.addActionListener(this);
+        
+        infoMessage.addPropertyChangeListener((evt) -> {
+            System.out.println("[AllProperties]: " + evt.getPropertyName());
+        });
+        infoMessage.addPropertyChangeListener(InfoMessage.PROP_STATE, (evt) -> {
+            System.out.println("[StateProperty]: " + evt.getNewValue());
+        });
+        infoMessage.addVetoableChangeListener((evt) -> {
+            System.out.println("[VetoableProperty]: " + evt.getPropertyName());
+            if (InfoMessage.PROP_TITLE.equals(evt.getPropertyName())) {
+                System.out.println("[VetoableProperty]: isTitle");
+                if (Objects.isNull(evt.getNewValue()) || ((String) evt.getNewValue()).isBlank()) {
+                    throw new PropertyVetoException("Empty title", evt);
+                }
+            }
+        });
     }
 
     /**
@@ -43,9 +63,12 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioWarning = new javax.swing.JRadioButton();
         radioError = new javax.swing.JRadioButton();
         companyLogo2 = new io.gongarce.ud2_components.company_logo.CompanyLogo();
+        infoMessage = new io.gongarce.ud2_components.info_message.InfoMessage();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
+        layout.columnWeights = new double[] {0.5, 0.5};
+        getContentPane().setLayout(layout);
 
         lblState.setState(io.gongarce.ud2_components.state_label.State.DEFAULT);
         lblState.setText("stateLabel2");
@@ -98,6 +121,16 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         getContentPane().add(companyLogo2, gridBagConstraints);
 
+        infoMessage.setMessage("I will notify every suscriber when a property change");
+        infoMessage.setTitle("Did you know?");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        getContentPane().add(infoMessage, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -138,6 +171,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private io.gongarce.ud2_components.company_logo.CompanyLogo companyLogo2;
+    private io.gongarce.ud2_components.info_message.InfoMessage infoMessage;
     private io.gongarce.ud2_components.state_label.StateLabel lblState;
     private javax.swing.JRadioButton radioDefault;
     private javax.swing.JRadioButton radioError;
@@ -151,15 +185,27 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         if (radioDefault.isSelected()) {
             lblState.setText("State: Default");
             lblState.setState(State.DEFAULT);
+            infoMessage.setState(StateMessage.INFO);
+            infoMessage.setTitle("Title info");
+            infoMessage.setMessage("A informative message");
         } else if (radioError.isSelected()) {
             lblState.setText("State: Error");
             lblState.setState(State.ERROR);
+            infoMessage.setState(StateMessage.ERROR);
+            infoMessage.setTitle("");
+            infoMessage.setMessage("A error message");
         } else if (radioSuccess.isSelected()) {
             lblState.setText("State: Success");
             lblState.setState(State.SUCCESS);
+            infoMessage.setState(StateMessage.SUCCESS);
+            infoMessage.setTitle("Title ok");
+            infoMessage.setMessage("A successful message");
         } else if (radioWarning.isSelected()) {
             lblState.setText("State: Warning");
             lblState.setState(State.WARNING);
+            infoMessage.setState(StateMessage.WARNING);
+            infoMessage.setTitle("Title warning");
+            infoMessage.setMessage("A warning message");
         }
     }
 }

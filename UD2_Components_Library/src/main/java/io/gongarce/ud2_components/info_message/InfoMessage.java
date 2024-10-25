@@ -1,9 +1,15 @@
 package io.gongarce.ud2_components.info_message;
 
 import java.awt.Color;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,6 +22,8 @@ import javax.swing.border.LineBorder;
 public class InfoMessage extends javax.swing.JPanel {
 
     public static final String PROP_TITLE = "title";
+    public static final String PROP_STATE = "state";
+    public static final String PROP_MESSAGE = "message";
 
     private String title;
     private String message;
@@ -23,6 +31,7 @@ public class InfoMessage extends javax.swing.JPanel {
     private StateMessage state;
 
     private Color messageColor;
+    private Set<PropertyChangeListener> myListeners = new HashSet<>();
 
     /**
      * Creates new form InfoMessage
@@ -45,6 +54,7 @@ public class InfoMessage extends javax.swing.JPanel {
     }
 
     public void setState(StateMessage state) {
+        StateMessage oldValue = this.state;
         this.state = state;
         Color borderColor, bgColor;
         Icon icon;
@@ -73,6 +83,7 @@ public class InfoMessage extends javax.swing.JPanel {
         setBackground(bgColor);
         setBorder(new LineBorder(borderColor, 1, true));
         lblIcon.setIcon(icon);
+        firePropertyChange(PROP_STATE, oldValue, state);
     }
 
     public String getTitle() {
@@ -83,6 +94,7 @@ public class InfoMessage extends javax.swing.JPanel {
         try {
             fireVetoableChange(PROP_TITLE, this.title, title);
         } catch (PropertyVetoException ex) {
+            System.out.println("[setTitle] VetoableChange: " + ex.getMessage());
             return;
         }
         this.title = title;
@@ -94,8 +106,10 @@ public class InfoMessage extends javax.swing.JPanel {
     }
 
     public void setMessage(String message) {
+        String oldValue = this.message;
         this.message = message;
         lblMessage.setText(message);
+        firePropertyChange(PROP_MESSAGE, oldValue, message);
     }
 
     public String[] getButtons() {
@@ -132,6 +146,22 @@ public class InfoMessage extends javax.swing.JPanel {
         JButton button = new JButton(text);
         panelButtons.remove(position);
         panelButtons.add(button, position);
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (Objects.isNull(myListeners)) {
+            myListeners = new HashSet<>();
+        }
+        myListeners.add(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if (Objects.isNull(myListeners)) {
+            myListeners = new HashSet<>();
+        }
+        myListeners.remove(listener);
     }
 
     /**
