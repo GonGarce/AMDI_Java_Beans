@@ -1,13 +1,11 @@
 package io.gongarce.ud2_components.info_message;
 
 import java.awt.Color;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.swing.Icon;
@@ -31,7 +29,7 @@ public class InfoMessage extends javax.swing.JPanel {
     private StateMessage state;
 
     private Color messageColor;
-    private Set<PropertyChangeListener> myListeners = new HashSet<>();
+    private Set<PropertyChangeListener> myListeners;
 
     /**
      * Creates new form InfoMessage
@@ -42,7 +40,6 @@ public class InfoMessage extends javax.swing.JPanel {
 
         // Create UI
         initComponents();
-
         // Set default values
         setState(StateMessage.INFO);
         setTitle("Title");
@@ -83,7 +80,7 @@ public class InfoMessage extends javax.swing.JPanel {
         setBackground(bgColor);
         setBorder(new LineBorder(borderColor, 1, true));
         lblIcon.setIcon(icon);
-        firePropertyChange(PROP_STATE, oldValue, state);
+        fireMyPropertyChange(PROP_STATE, oldValue, state);
     }
 
     public String getTitle() {
@@ -109,7 +106,7 @@ public class InfoMessage extends javax.swing.JPanel {
         String oldValue = this.message;
         this.message = message;
         lblMessage.setText(message);
-        firePropertyChange(PROP_MESSAGE, oldValue, message);
+        fireMyPropertyChange(PROP_MESSAGE, oldValue, message);
     }
 
     public String[] getButtons() {
@@ -150,20 +147,28 @@ public class InfoMessage extends javax.swing.JPanel {
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        if (Objects.isNull(myListeners)) {
-            myListeners = new HashSet<>();
-        }
-        myListeners.add(listener);
+        getMyListeners().add(listener);
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
+        getMyListeners().remove(listener);
+    }
+
+    public void fireMyPropertyChange(String propertyName, Object oldValue, Object newValue) {
+        super.firePropertyChange(propertyName, oldValue, newValue);
+        for (var listener : getMyListeners()) {
+            listener.propertyChange(new PropertyChangeEvent(this, propertyName, oldValue, newValue));
+        }
+    }
+    
+    private Set<PropertyChangeListener> getMyListeners() {
         if (Objects.isNull(myListeners)) {
             myListeners = new HashSet<>();
         }
-        myListeners.remove(listener);
+        return myListeners;
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
