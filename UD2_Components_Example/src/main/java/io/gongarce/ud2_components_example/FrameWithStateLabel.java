@@ -1,12 +1,16 @@
 package io.gongarce.ud2_components_example;
 
 import io.gongarce.ud2_components.info_message.InfoMessage;
+import io.gongarce.ud2_components.info_message.InfoMessageButtonListener;
+import io.gongarce.ud2_components.info_message.InfoMessageCloseListener;
 import io.gongarce.ud2_components.info_message.StateMessage;
 import io.gongarce.ud2_components.state_label.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.util.Objects;
+import javax.swing.event.MouseInputListener;
 
 /**
  *
@@ -29,6 +33,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioSuccess.addActionListener(this);
         radioWarning.addActionListener(this);
         
+        // Propiedades
         infoMessage.addPropertyChangeListener((evt) -> {
             System.out.println("[AllProperties]: " + evt.getPropertyName());
         });
@@ -42,6 +47,20 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
                 if (Objects.isNull(evt.getNewValue()) || ((String) evt.getNewValue()).isBlank()) {
                     throw new PropertyVetoException("Empty title", evt);
                 }
+            }
+        });
+        // Eventos
+        infoMessage.addCloseListener(new InfoMessageCloseListener() {
+            @Override
+            public void onClose() {
+                infoMessage.setVisible(false);
+                FrameWithStateLabel.this.remove(infoMessage);
+            }
+        });
+        infoMessage.addButtonsListener(new InfoMessageButtonListener() {
+            @Override
+            public void onAction(String button) {
+                System.out.println("Button action: " + button);
             }
         });
     }
@@ -182,6 +201,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
 
     @Override
     public void actionPerformed(ActionEvent e) {
+            infoMessage.setButtons(null);
         if (radioDefault.isSelected()) {
             lblState.setText("State: Default");
             lblState.setState(State.DEFAULT);
@@ -193,7 +213,8 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             lblState.setState(State.ERROR);
             infoMessage.setState(StateMessage.ERROR);
             infoMessage.setTitle("");
-            infoMessage.setMessage("A error message");
+            infoMessage.setMessage("An error message");
+            infoMessage.setButtons(new String[]{"Retry"});
         } else if (radioSuccess.isSelected()) {
             lblState.setText("State: Success");
             lblState.setState(State.SUCCESS);
@@ -206,6 +227,8 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             infoMessage.setState(StateMessage.WARNING);
             infoMessage.setTitle("Title warning");
             infoMessage.setMessage("A warning message");
+            infoMessage.setButtons(new String[]{"Accept", "Decline"});
         }
+        repaint();
     }
 }

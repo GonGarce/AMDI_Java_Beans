@@ -30,6 +30,8 @@ public class InfoMessage extends javax.swing.JPanel {
 
     private Color messageColor;
     private Set<PropertyChangeListener> myListeners;
+    private Set<InfoMessageCloseListener> closeListeners;
+    private Set<InfoMessageButtonListener> buttonsListeners;
 
     /**
      * Creates new form InfoMessage
@@ -115,8 +117,11 @@ public class InfoMessage extends javax.swing.JPanel {
 
     public void setButtons(String[] buttons) {
         this.buttons = buttons;
-        for (String button : buttons) {
-            createButton(button);
+        panelButtons.removeAll();
+        if (Objects.nonNull(buttons)) {
+            for (String button : buttons) {
+                addButton(button);
+            }
         }
     }
 
@@ -130,19 +135,25 @@ public class InfoMessage extends javax.swing.JPanel {
     public void setButton(int position, String button) {
         if (Objects.nonNull(this.buttons) && position < this.buttons.length) {
             this.buttons[position] = button;
-            createButton(position, button);
+            addButton(position, button);
         }
     }
 
-    private void createButton(String text) {
+    private JButton createButton(String text) {
         JButton button = new JButton(text);
-        panelButtons.add(button);
+        button.addActionListener((e) -> {
+            callButtonsListeners(text);
+        });
+        return button;
     }
 
-    private void createButton(int position, String text) {
-        JButton button = new JButton(text);
+    private void addButton(String text) {
+        panelButtons.add(createButton(text));
+    }
+
+    private void addButton(int position, String text) {
         panelButtons.remove(position);
-        panelButtons.add(button, position);
+        panelButtons.add(createButton(text), position);
     }
 
     @Override
@@ -161,14 +172,14 @@ public class InfoMessage extends javax.swing.JPanel {
             listener.propertyChange(new PropertyChangeEvent(this, propertyName, oldValue, newValue));
         }
     }
-    
+
     private Set<PropertyChangeListener> getMyListeners() {
         if (Objects.isNull(myListeners)) {
             myListeners = new HashSet<>();
         }
         return myListeners;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -183,6 +194,7 @@ public class InfoMessage extends javax.swing.JPanel {
         lblTitle = new javax.swing.JLabel();
         lblMessage = new javax.swing.JLabel();
         panelButtons = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -199,6 +211,7 @@ public class InfoMessage extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
         add(lblMessage, gridBagConstraints);
@@ -210,12 +223,74 @@ public class InfoMessage extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         add(panelButtons, gridBagConstraints);
+
+        jButton1.setText("X");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
+        add(jButton1, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
+
+    private Set<InfoMessageButtonListener> getButonsListeners() {
+        if (Objects.isNull(buttonsListeners)) {
+            buttonsListeners = new HashSet<>();
+        }
+        return buttonsListeners;
+    }
+
+    public void addButtonsListener(InfoMessageButtonListener listener) {
+        // Save listener
+        getButonsListeners().add(listener);
+    }
+
+    public void removeButtonsListener(InfoMessageButtonListener listener) {
+        getButonsListeners().remove(listener);
+    }
+
+    private void callButtonsListeners(String button) {
+        // Here we will call 'onClose()'
+        for (var listener : buttonsListeners) {
+            if (Objects.nonNull(listener)) {
+                listener.onAction(button);
+            }
+        }
+    }
+
+    private Set<InfoMessageCloseListener> getCloseListeners() {
+        if (Objects.isNull(closeListeners)) {
+            closeListeners = new HashSet<>();
+        }
+        return closeListeners;
+    }
+
+    public void addCloseListener(InfoMessageCloseListener listener) {
+        // Save listener
+        getCloseListeners().add(listener);
+    }
+
+    public void removeCloseListener(InfoMessageCloseListener listener) {
+        getCloseListeners().remove(listener);
+    }
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Here we will call 'onClose()'
+        for (var listener : closeListeners) {
+            if (Objects.nonNull(listener)) {
+                listener.onClose();
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel lblIcon;
     private javax.swing.JLabel lblMessage;
     private javax.swing.JLabel lblTitle;
