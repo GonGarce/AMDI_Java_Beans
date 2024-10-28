@@ -1,6 +1,7 @@
 package io.gongarce.ud2_components_example;
 
 import io.gongarce.ud2_components.info_message.InfoMessage;
+import io.gongarce.ud2_components.info_message.InfoMessageButton;
 import io.gongarce.ud2_components.info_message.InfoMessageButtonListener;
 import io.gongarce.ud2_components.info_message.InfoMessageCloseListener;
 import io.gongarce.ud2_components.info_message.StateMessage;
@@ -32,7 +33,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         radioError.addActionListener(this);
         radioSuccess.addActionListener(this);
         radioWarning.addActionListener(this);
-        
+
         // Propiedades
         infoMessage.addPropertyChangeListener((evt) -> {
             System.out.println("[AllProperties]: " + evt.getPropertyName());
@@ -201,7 +202,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
 
     @Override
     public void actionPerformed(ActionEvent e) {
-            infoMessage.setButtons(null);
+        infoMessage.setButtons(null);
         if (radioDefault.isSelected()) {
             lblState.setText("State: Default");
             lblState.setState(State.DEFAULT);
@@ -214,7 +215,11 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             infoMessage.setState(StateMessage.ERROR);
             infoMessage.setTitle("");
             infoMessage.setMessage("An error message");
-            infoMessage.setButtons(new String[]{"Retry"});
+            infoMessage.setButtons(new InfoMessageButton[]{
+                new InfoMessageButton("Retry", (evt) -> {
+                    System.out.println("Retry button");
+                })
+            });
         } else if (radioSuccess.isSelected()) {
             lblState.setText("State: Success");
             lblState.setState(State.SUCCESS);
@@ -227,7 +232,14 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             infoMessage.setState(StateMessage.WARNING);
             infoMessage.setTitle("Title warning");
             infoMessage.setMessage("A warning message");
-            infoMessage.setButtons(new String[]{"Accept", "Decline"});
+            infoMessage.setButtons(new InfoMessageButton[]{
+                new InfoMessageButton("Accept", (evt) -> {
+                    System.out.println("Accept button");
+                }),
+                new InfoMessageButton("Decline", (evt) -> {
+                    System.out.println("Decline button");
+                })
+            });
         }
         repaint();
     }

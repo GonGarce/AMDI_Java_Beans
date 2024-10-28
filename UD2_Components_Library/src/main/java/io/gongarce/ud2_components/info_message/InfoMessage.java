@@ -25,7 +25,7 @@ public class InfoMessage extends javax.swing.JPanel {
 
     private String title;
     private String message;
-    private String[] buttons;
+    private InfoMessageButton[] buttons;
     private StateMessage state;
 
     private Color messageColor;
@@ -111,49 +111,49 @@ public class InfoMessage extends javax.swing.JPanel {
         fireMyPropertyChange(PROP_MESSAGE, oldValue, message);
     }
 
-    public String[] getButtons() {
+    public InfoMessageButton[] getButtons() {
         return buttons;
     }
 
-    public void setButtons(String[] buttons) {
+    public void setButtons(InfoMessageButton[] buttons) {
         this.buttons = buttons;
         panelButtons.removeAll();
         if (Objects.nonNull(buttons)) {
-            for (String button : buttons) {
+            for (InfoMessageButton button : buttons) {
                 addButton(button);
             }
         }
     }
 
-    public String getButton(int position) {
+    public InfoMessageButton getButton(int position) {
         if (position > buttons.length - 1) {
             return null;
         }
         return buttons[position];
     }
 
-    public void setButton(int position, String button) {
+    public void setButton(int position, InfoMessageButton button) {
         if (Objects.nonNull(this.buttons) && position < this.buttons.length) {
             this.buttons[position] = button;
             addButton(position, button);
         }
     }
 
-    private JButton createButton(String text) {
-        JButton button = new JButton(text);
-        button.addActionListener((e) -> {
-            callButtonsListeners(text);
-        });
+    private JButton createButton(InfoMessageButton infoButton) {
+        JButton button = new JButton(infoButton.getLabel());
+        if (Objects.nonNull(infoButton.getListener())) {
+            button.addActionListener(infoButton.getListener());
+        }
         return button;
     }
 
-    private void addButton(String text) {
-        panelButtons.add(createButton(text));
+    private void addButton(InfoMessageButton button) {
+        panelButtons.add(createButton(button));
     }
 
-    private void addButton(int position, String text) {
+    private void addButton(int position, InfoMessageButton button) {
         panelButtons.remove(position);
-        panelButtons.add(createButton(text), position);
+        panelButtons.add(createButton(button), position);
     }
 
     @Override
