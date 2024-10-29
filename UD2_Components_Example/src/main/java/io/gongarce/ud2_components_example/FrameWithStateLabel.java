@@ -2,16 +2,13 @@ package io.gongarce.ud2_components_example;
 
 import io.gongarce.ud2_components.info_message.InfoMessage;
 import io.gongarce.ud2_components.info_message.InfoMessageButton;
-import io.gongarce.ud2_components.info_message.InfoMessageButtonListener;
-import io.gongarce.ud2_components.info_message.InfoMessageCloseListener;
+import io.gongarce.ud2_components.info_message.InfoMessageEventListener;
 import io.gongarce.ud2_components.info_message.StateMessage;
 import io.gongarce.ud2_components.state_label.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.util.Objects;
-import javax.swing.event.MouseInputListener;
 
 /**
  *
@@ -51,17 +48,22 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             }
         });
         // Eventos
-        infoMessage.addCloseListener(new InfoMessageCloseListener() {
+        infoMessage.addCloseListener(() -> {
+            infoMessage.setVisible(false);
+            FrameWithStateLabel.this.remove(infoMessage);
+        });
+        infoMessage.addButtonsListener((String button) -> {
+            System.out.println("Button action: " + button);
+        });
+        infoMessage.addEventListener(new InfoMessageEventListener() {
             @Override
             public void onClose() {
-                infoMessage.setVisible(false);
-                FrameWithStateLabel.this.remove(infoMessage);
+                System.out.println("[InfoMessageEventListener] Close");
             }
-        });
-        infoMessage.addButtonsListener(new InfoMessageButtonListener() {
+
             @Override
             public void onAction(String button) {
-                System.out.println("Button action: " + button);
+                System.out.println("[InfoMessageEventListener] Button action: " + button);
             }
         });
     }

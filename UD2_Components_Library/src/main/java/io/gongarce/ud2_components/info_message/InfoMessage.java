@@ -32,6 +32,9 @@ public class InfoMessage extends javax.swing.JPanel {
     private Set<PropertyChangeListener> myListeners;
     private Set<InfoMessageCloseListener> closeListeners;
     private Set<InfoMessageButtonListener> buttonsListeners;
+    
+    // Ejemplo una sola interfaz para todos los eventos
+    private Set<InfoMessageEventListener> eventListeners;
 
     /**
      * Creates new form InfoMessage
@@ -144,6 +147,9 @@ public class InfoMessage extends javax.swing.JPanel {
         if (Objects.nonNull(infoButton.getListener())) {
             button.addActionListener(infoButton.getListener());
         }
+        button.addActionListener((e) -> {
+            callButtonsListeners(infoButton.getLabel());
+        });
         return button;
     }
 
@@ -237,7 +243,23 @@ public class InfoMessage extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
         add(jButton1, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
+    
+    private Set<InfoMessageEventListener> getEventListeners() {
+        if (Objects.isNull(eventListeners)) {
+            eventListeners = new HashSet<>();
+        }
+        return eventListeners;
+    }
 
+    public void addEventListener(InfoMessageEventListener listener) {
+        // Save listener
+        getEventListeners().add(listener);
+    }
+
+    public void removeEventListener(InfoMessageEventListener listener) {
+        getEventListeners().remove(listener);
+    }
+    
     private Set<InfoMessageButtonListener> getButonsListeners() {
         if (Objects.isNull(buttonsListeners)) {
             buttonsListeners = new HashSet<>();
@@ -256,7 +278,7 @@ public class InfoMessage extends javax.swing.JPanel {
 
     private void callButtonsListeners(String button) {
         // Here we will call 'onClose()'
-        for (var listener : buttonsListeners) {
+        for (var listener : eventListeners) {
             if (Objects.nonNull(listener)) {
                 listener.onAction(button);
             }
@@ -281,7 +303,7 @@ public class InfoMessage extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Here we will call 'onClose()'
-        for (var listener : closeListeners) {
+        for (var listener : eventListeners) {
             if (Objects.nonNull(listener)) {
                 listener.onClose();
             }
