@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
  * @author gag
  */
 public class InfoMessageButton {
-    String label;
-    ActionListener listener;
+    private String label;
+    private ActionListener listener;
 
     public InfoMessageButton(String label, ActionListener listener) {
         this.label = label;

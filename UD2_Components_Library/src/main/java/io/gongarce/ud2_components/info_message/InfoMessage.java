@@ -5,9 +5,17 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyVetoException;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.prefs.Preferences;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,21 +25,46 @@ import javax.swing.border.LineBorder;
  *
  * @author Gonzalo
  */
-public class InfoMessage extends javax.swing.JPanel {
+public class InfoMessage extends javax.swing.JPanel implements Serializable {
 
     public static final String PROP_TITLE = "title";
     public static final String PROP_STATE = "state";
     public static final String PROP_MESSAGE = "message";
 
+    private static final String CLOSE_VISIBILITY = "show_icon";
+
     private String title;
     private String message;
     private InfoMessageButton[] buttons;
     private StateMessage state;
+    private boolean showClose;
 
     private Color messageColor;
     private Set<PropertyChangeListener> myListeners;
     private Set<InfoMessageCloseListener> closeListeners;
     private Set<InfoMessageButtonListener> buttonsListeners;
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+        try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(out))) {
+            e.writeObject(this);
+        }
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        try (XMLDecoder d = new XMLDecoder(new BufferedInputStream(in))) {
+            Object o = d.readObject();
+            if (o instanceof InfoMessage restored) {
+                this.title = restored.title;
+                this.message = restored.message;
+            }
+        }
+    }
+
+    private void readObjectNoData()
+            throws ObjectStreamException {
+    }
 
     /**
      * Creates new form InfoMessage
@@ -43,9 +76,32 @@ public class InfoMessage extends javax.swing.JPanel {
         // Create UI
         initComponents();
         // Set default values
+        initUI();
+    }
+    
+    private void initUI() {
         setState(StateMessage.INFO);
         setTitle("Title");
         setMessage("Message");
+        
+        Preferences prefs = Preferences.userNodeForPackage(InfoMessage.class);
+        setCloseVisibility(prefs.getBoolean(CLOSE_VISIBILITY, true));
+    }
+
+    public void toggleCloseVisibility() {
+        Preferences prefs = Preferences.userNodeForPackage(InfoMessage.class);
+        boolean newVisibility = !this.showClose;
+        prefs.putBoolean(CLOSE_VISIBILITY, newVisibility);
+        setCloseVisibility(newVisibility);
+    }
+
+    public void setCloseVisibility(boolean visible) {
+        this.showClose = visible;
+        this.btnClose.setVisible(visible);
+    }
+    
+    public boolean getCloseVisibility() {
+        return this.showClose;
     }
 
     public StateMessage getState() {
@@ -141,9 +197,13 @@ public class InfoMessage extends javax.swing.JPanel {
 
     private JButton createButton(InfoMessageButton infoButton) {
         JButton button = new JButton(infoButton.getLabel());
+        // We are using both listeners implemetantion, one could be removed
         if (Objects.nonNull(infoButton.getListener())) {
             button.addActionListener(infoButton.getListener());
         }
+        button.addActionListener((e) -> {
+            callButtonsListeners(infoButton.getLabel());
+        });
         return button;
     }
 
@@ -194,7 +254,7 @@ public class InfoMessage extends javax.swing.JPanel {
         lblTitle = new javax.swing.JLabel();
         lblMessage = new javax.swing.JLabel();
         panelButtons = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnClose = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -227,15 +287,16 @@ public class InfoMessage extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         add(panelButtons, gridBagConstraints);
 
-        jButton1.setText("X");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnClose.setText("X");
+        btnClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCloseActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
-        add(jButton1, gridBagConstraints);
+        add(btnClose, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private Set<InfoMessageButtonListener> getButonsListeners() {
@@ -279,18 +340,18 @@ public class InfoMessage extends javax.swing.JPanel {
         getCloseListeners().remove(listener);
     }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
         // Here we will call 'onClose()'
         for (var listener : closeListeners) {
             if (Objects.nonNull(listener)) {
                 listener.onClose();
             }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCloseActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnClose;
     private javax.swing.JLabel lblIcon;
     private javax.swing.JLabel lblMessage;
     private javax.swing.JLabel lblTitle;

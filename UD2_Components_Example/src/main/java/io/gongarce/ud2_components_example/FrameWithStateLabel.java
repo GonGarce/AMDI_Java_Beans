@@ -11,6 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import javax.swing.event.MouseInputListener;
 
 /**
@@ -64,6 +68,8 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
                 System.out.println("Button action: " + button);
             }
         });
+        Preferences prefs = Preferences.userRoot().node("infoMessage2");
+        infoMessage2.setCloseVisibility(prefs.getBoolean("CLOSE", infoMessage2.getCloseVisibility()));
     }
 
     /**
@@ -78,12 +84,18 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
 
         radioGroupState = new javax.swing.ButtonGroup();
         lblState = new io.gongarce.ud2_components.state_label.StateLabel();
-        radioDefault = new javax.swing.JRadioButton();
-        radioSuccess = new javax.swing.JRadioButton();
-        radioWarning = new javax.swing.JRadioButton();
-        radioError = new javax.swing.JRadioButton();
         companyLogo2 = new io.gongarce.ud2_components.company_logo.CompanyLogo();
         infoMessage = new io.gongarce.ud2_components.info_message.InfoMessage();
+        jPanel1 = new javax.swing.JPanel();
+        radioDefault = new javax.swing.JRadioButton();
+        radioWarning = new javax.swing.JRadioButton();
+        radioSuccess = new javax.swing.JRadioButton();
+        radioError = new javax.swing.JRadioButton();
+        infoMessage2 = new io.gongarce.ud2_components.info_message.InfoMessage();
+        jPanel2 = new javax.swing.JPanel();
+        btnToggleGlobal = new javax.swing.JButton();
+        btnToggle1 = new javax.swing.JButton();
+        btnToggle2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
@@ -99,43 +111,6 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipady = 20;
         getContentPane().add(lblState, gridBagConstraints);
-
-        radioGroupState.add(radioDefault);
-        radioDefault.setSelected(true);
-        radioDefault.setText("Default");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        getContentPane().add(radioDefault, gridBagConstraints);
-
-        radioGroupState.add(radioSuccess);
-        radioSuccess.setText("Success");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        getContentPane().add(radioSuccess, gridBagConstraints);
-
-        radioGroupState.add(radioWarning);
-        radioWarning.setText("Warning");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        getContentPane().add(radioWarning, gridBagConstraints);
-
-        radioGroupState.add(radioError);
-        radioError.setText("Error");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        getContentPane().add(radioError, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
@@ -145,14 +120,98 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         infoMessage.setTitle("Did you know?");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(infoMessage, gridBagConstraints);
+
+        jPanel1.setLayout(new java.awt.GridLayout(2, 2, 20, 10));
+
+        radioGroupState.add(radioDefault);
+        radioDefault.setSelected(true);
+        radioDefault.setText("Default");
+        jPanel1.add(radioDefault);
+
+        radioGroupState.add(radioWarning);
+        radioWarning.setText("Warning");
+        jPanel1.add(radioWarning);
+
+        radioGroupState.add(radioSuccess);
+        radioSuccess.setText("Success");
+        jPanel1.add(radioSuccess);
+
+        radioGroupState.add(radioError);
+        radioError.setText("Error");
+        jPanel1.add(radioError);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        getContentPane().add(jPanel1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        getContentPane().add(infoMessage2, gridBagConstraints);
+
+        btnToggleGlobal.setText("Toggle  Global");
+        btnToggleGlobal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnToggleGlobalActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnToggleGlobal);
+
+        btnToggle1.setText("Toggle Message 2");
+        btnToggle1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnToggle1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnToggle1);
+
+        btnToggle2.setText("Clear Message 2");
+        btnToggle2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnToggle2ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnToggle2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        getContentPane().add(jPanel2, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnToggleGlobalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggleGlobalActionPerformed
+        infoMessage.toggleCloseVisibility();
+    }//GEN-LAST:event_btnToggleGlobalActionPerformed
+
+    private void btnToggle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggle1ActionPerformed
+        Preferences prefs = Preferences.userRoot().node("infoMessage2");
+        boolean visibility = !infoMessage2.getCloseVisibility();
+        prefs.putBoolean("CLOSE", visibility);
+        infoMessage2.setCloseVisibility(visibility);
+    }//GEN-LAST:event_btnToggle1ActionPerformed
+
+    private void btnToggle2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggle2ActionPerformed
+        Preferences prefs = Preferences.userRoot().node("infoMessage2");
+        try {
+            prefs.clear();
+        } catch (BackingStoreException ex) {
+            Logger.getLogger(FrameWithStateLabel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnToggle2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,8 +249,14 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnToggle1;
+    private javax.swing.JButton btnToggle2;
+    private javax.swing.JButton btnToggleGlobal;
     private io.gongarce.ud2_components.company_logo.CompanyLogo companyLogo2;
     private io.gongarce.ud2_components.info_message.InfoMessage infoMessage;
+    private io.gongarce.ud2_components.info_message.InfoMessage infoMessage2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private io.gongarce.ud2_components.state_label.StateLabel lblState;
     private javax.swing.JRadioButton radioDefault;
     private javax.swing.JRadioButton radioError;
