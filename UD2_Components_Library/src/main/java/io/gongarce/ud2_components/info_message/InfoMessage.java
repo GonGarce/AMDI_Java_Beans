@@ -1,16 +1,14 @@
 package io.gongarce.ud2_components.info_message;
 
+import io.gongarce.ud2_components.Serializer;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyVetoException;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.ObjectStreamException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,38 +31,14 @@ public class InfoMessage extends javax.swing.JPanel implements Serializable {
 
     private static final String CLOSE_VISIBILITY = "show_icon";
 
-    private String title;
-    private String message;
+    private InfoMessageModel model;
     private InfoMessageButton[] buttons;
-    private StateMessage state;
     private boolean showClose;
 
     private Color messageColor;
     private Set<PropertyChangeListener> myListeners;
     private Set<InfoMessageCloseListener> closeListeners;
     private Set<InfoMessageButtonListener> buttonsListeners;
-
-    private void writeObject(java.io.ObjectOutputStream out)
-            throws IOException {
-        try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(out))) {
-            e.writeObject(this);
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
-        try (XMLDecoder d = new XMLDecoder(new BufferedInputStream(in))) {
-            Object o = d.readObject();
-            if (o instanceof InfoMessage restored) {
-                this.title = restored.title;
-                this.message = restored.message;
-            }
-        }
-    }
-
-    private void readObjectNoData()
-            throws ObjectStreamException {
-    }
 
     /**
      * Creates new form InfoMessage
@@ -78,14 +52,24 @@ public class InfoMessage extends javax.swing.JPanel implements Serializable {
         // Set default values
         initUI();
     }
-    
+
     private void initUI() {
-        setState(StateMessage.INFO);
-        setTitle("Title");
-        setMessage("Message");
-        
         Preferences prefs = Preferences.userNodeForPackage(InfoMessage.class);
         setCloseVisibility(prefs.getBoolean(CLOSE_VISIBILITY, true));
+        setModel(new InfoMessageModel("Title", "Message", StateMessage.INFO));
+    }
+
+    public InfoMessageModel getModel() {
+        return model;
+    }
+
+    public void setModel(InfoMessageModel model) {
+        this.model = model;
+        if (Objects.nonNull(model)) {
+            setTitle(model.getTitle());
+            setMessage(model.getMessage());
+            setState(model.getState());
+        }
     }
 
     public void toggleCloseVisibility() {
@@ -99,18 +83,18 @@ public class InfoMessage extends javax.swing.JPanel implements Serializable {
         this.showClose = visible;
         this.btnClose.setVisible(visible);
     }
-    
+
     public boolean getCloseVisibility() {
         return this.showClose;
     }
 
     public StateMessage getState() {
-        return state;
+        return this.model.getState();
     }
 
     public void setState(StateMessage state) {
-        StateMessage oldValue = this.state;
-        this.state = state;
+        StateMessage oldValue = this.model.getState();
+        this.model.setState(state);
         Color borderColor, bgColor;
         Icon icon;
         switch (state) {
@@ -142,27 +126,27 @@ public class InfoMessage extends javax.swing.JPanel implements Serializable {
     }
 
     public String getTitle() {
-        return title;
+        return model.getTitle();
     }
 
     public void setTitle(String title) {
         try {
-            fireVetoableChange(PROP_TITLE, this.title, title);
+            fireVetoableChange(PROP_TITLE, this.model.getTitle(), title);
         } catch (PropertyVetoException ex) {
             System.out.println("[setTitle] VetoableChange: " + ex.getMessage());
             return;
         }
-        this.title = title;
+        this.model.setTitle(title);
         lblTitle.setText(title);
     }
 
     public String getMessage() {
-        return message;
+        return model.getMessage();
     }
 
     public void setMessage(String message) {
-        String oldValue = this.message;
-        this.message = message;
+        String oldValue = this.model.getMessage();
+        this.model.setMessage(message);
         lblMessage.setText(message);
         fireMyPropertyChange(PROP_MESSAGE, oldValue, message);
     }

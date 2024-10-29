@@ -1,21 +1,21 @@
 package io.gongarce.ud2_components_example;
 
+import io.gongarce.ud2_components.Serializer;
 import io.gongarce.ud2_components.info_message.InfoMessage;
 import io.gongarce.ud2_components.info_message.InfoMessageButton;
 import io.gongarce.ud2_components.info_message.InfoMessageButtonListener;
 import io.gongarce.ud2_components.info_message.InfoMessageCloseListener;
+import io.gongarce.ud2_components.info_message.InfoMessageModel;
 import io.gongarce.ud2_components.info_message.StateMessage;
 import io.gongarce.ud2_components.state_label.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.event.MouseInputListener;
 
 /**
  *
@@ -70,6 +70,19 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
         });
         Preferences prefs = Preferences.userRoot().node("infoMessage2");
         infoMessage2.setCloseVisibility(prefs.getBoolean("CLOSE", infoMessage2.getCloseVisibility()));
+
+        // Update message with saved model
+        infoMessage2.addPropertyChangeListener((evt) -> {
+            System.out.println("[AllProperties]: " + evt.getPropertyName());
+            if ("model".equals(evt.getPropertyName())){
+                revalidate();
+                repaint();
+            }
+        });
+        InfoMessageModel model = Serializer.read("info.ser", InfoMessageModel.class);
+        if (Objects.nonNull(model)) {
+            infoMessage2.setModel(model);
+        }
     }
 
     /**
@@ -307,5 +320,6 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             });
         }
         repaint();
+        Serializer.save("info.ser", infoMessage.getModel());
     }
 }
