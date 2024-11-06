@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="22.0.1" class="java.beans.XMLDecoder">
+ <object class="io.gongarce.ud2_components.info_message.InfoMessageModel">
+  <void property="message">
+   <string>An error message</string>
+  </void>
+  <void property="state">
+   <object class="java.lang.Enum" method="valueOf">
+    <class>io.gongarce.ud2_components.info_message.StateMessage</class>
+    <string>ERROR</string>
+   </object>
+  </void>
+  <void property="title">
+   <string>Did you know?</string>
+  </void>
+ </object>
+</java>

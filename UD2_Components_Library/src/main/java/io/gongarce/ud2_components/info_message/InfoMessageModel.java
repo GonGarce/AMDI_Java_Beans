@@ -11,6 +11,10 @@ public class InfoMessageModel implements Serializable {
     private String message;
     private StateMessage state;
 
+    public InfoMessageModel() {
+        
+    }
+    
     public InfoMessageModel(String title, String message, StateMessage state) {
         this.title = title;
         this.message = message;

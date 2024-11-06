@@ -1,5 +1,6 @@
 package io.gongarce.ud2_components_example;
 
+import io.gongarce.ud2_components.Encoder;
 import io.gongarce.ud2_components.Serializer;
 import io.gongarce.ud2_components.info_message.InfoMessage;
 import io.gongarce.ud2_components.info_message.InfoMessageButton;
@@ -79,7 +80,7 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
                 repaint();
             }
         });
-        InfoMessageModel model = Serializer.read("info.ser", InfoMessageModel.class);
+        InfoMessageModel model = Encoder.read("infosave.xml", InfoMessageModel.class);
         if (Objects.nonNull(model)) {
             infoMessage2.setModel(model);
         }
@@ -320,6 +321,6 @@ public class FrameWithStateLabel extends javax.swing.JFrame implements ActionLis
             });
         }
         repaint();
-        Serializer.save("info.ser", infoMessage.getModel());
+        Encoder.save("infosave.xml", infoMessage.getModel());
     }
 }
